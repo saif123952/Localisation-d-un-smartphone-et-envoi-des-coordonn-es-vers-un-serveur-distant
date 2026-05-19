@@ -1,60 +1,135 @@
 # TP 11 : Localisation GPS et Tracking Mobile vers Serveur distant
+📖 Introduction
 
-Ce projet consiste à développer une application Android capable de récupérer les coordonnées géographiques (latitude et longitude) d'un smartphone et de les envoyer en temps réel vers un serveur distant (PHP/MySQL) pour stockage.
+Dans ce travail pratique, nous avons conçu une application Android permettant de récupérer la localisation GPS d’un smartphone puis de transmettre ces informations vers un serveur distant afin de les enregistrer dans une base de données MySQL.
 
-## 🚀 Objectifs Pédagogiques
-- Récupérer la position GPS d'un appareil Android.
-- Gérer les permissions Android (Localisation et État du téléphone).
-- Envoyer des données via des requêtes HTTP POST avec la bibliothèque **Volley**.
-- Structurer un backend PHP orienté objet avec une base de données MySQL.
+Le projet combine deux parties principales :
 
-## 🛠️ Architecture du Système
+une application mobile Android ;
+un serveur web PHP connecté à MySQL.
 
-### 1. Partie Serveur (Fedora / XAMPP)
-- **Base de données :** MySQL (Base `localisation`, table `position`).
-- **Structure PHP :**
-    - `connexion/DbManager.php` : Gère la liaison PDO.
-    - `service/GeoService.php` : Logique d'insertion des données.
-    - `CreatePosition.php` : Point d'entrée pour les requêtes POST du mobile.
+L’objectif est de simuler un système simple de suivi de position en temps réel.
 
-### 2. Partie Mobile (Android Studio)
-- **MainActivity.java** : Gère le `LocationManager` et l'envoi Volley.
-- **AndroidManifest.xml** : Déclare les permissions `ACCESS_FINE_LOCATION`, `INTERNET` et `READ_PHONE_STATE`.
-- **Layout** : Interface simple affichant les coordonnées, l'ID de l'appareil et le statut de l'envoi.
+🎯 Objectifs du TP
 
-## 📋 Configuration et Installation
+À travers ce projet, plusieurs notions importantes ont été étudiées :
 
-### Serveur MySQL
-Exécuter le script suivant dans phpMyAdmin :
-```sql
-CREATE DATABASE localisation;
-USE localisation;
-CREATE TABLE position (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    latitude DOUBLE NOT NULL,
-    longitude DOUBLE NOT NULL,
-    date_position DATETIME NOT NULL,
-    imei VARCHAR(50) NOT NULL
-);
-```
+utilisation du GPS sous Android ;
+gestion des permissions utilisateur ;
+communication entre Android et un serveur web ;
+utilisation des requêtes HTTP POST ;
+stockage des données dans une base MySQL ;
+création d’un backend PHP simple.
+🧱 Structure Générale du Projet
 
-### Serveur PHP (XAMPP sur Fedora)
-1. Placer le dossier du backend dans `/opt/lampp/htdocs/localisation/`.
-2. S'assurer que les permissions sont correctes : `sudo chmod -R 755 /opt/lampp/htdocs/localisation`.
-3. Désactiver temporairement SELinux si nécessaire : `sudo setenforce 0`.
+Le système est divisé en deux parties :
 
-### Application Android
-1. Modifier l'adresse IP dans `MainActivity.java` :
-   ```java
-   private static final String ENDPOINT_URL = "http://192.168.1.23/localisation/CreatePosition.php";
-   ```
-2. Compiler et lancer l'application sur un émulateur ou un smartphone réel.
+Partie	Description
+Application Android	Récupération et envoi des coordonnées GPS
+Serveur PHP/MySQL	Réception et stockage des données
+📱 Partie Mobile Android
+🔹 Fonctionnement
 
-## 📱 Démonstration Vidéo
-https://github.com/user-attachments/assets/530c419e-43a5-435f-b8c9-d3311a3f063e
+L’application récupère automatiquement :
 
-## ✅ Résultats Attendus
-- [x] Détection automatique de la position GPS.
-- [x] Affichage en temps réel sur l'interface mobile.
-- [x] Transmission réussie au serveur via Volley.
-- [x] Insertion automatique dans la base de données MySQL.
+la latitude ;
+la longitude ;
+l’identifiant du téléphone.
+
+Ces données sont ensuite envoyées vers le serveur grâce à la bibliothèque Volley.
+
+🔹 Fichiers Principaux
+MainActivity.java
+
+Ce fichier contient :
+
+la gestion du GPS ;
+la récupération de la position ;
+l’envoi HTTP vers le serveur ;
+l’affichage des informations à l’écran.
+AndroidManifest.xml
+
+Le manifeste contient les permissions nécessaires :
+
+accès Internet ;
+accès à la localisation ;
+lecture des informations de l’appareil.
+
+Exemple :
+
+<uses-permission android:name="android.permission.INTERNET"/>
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+💻 Partie Serveur
+🔹 Base de Données
+
+Une base MySQL a été créée afin de stocker les coordonnées reçues depuis l’application.
+
+Table utilisée :
+
+position_mobile
+
+Champs enregistrés :
+
+id
+latitude
+longitude
+date_save
+device_id
+🔹 Backend PHP
+
+Le serveur contient plusieurs fichiers séparés afin de mieux organiser le projet :
+
+Fichier	Rôle
+Database.php	Connexion à MySQL
+PositionManager.php	Insertion des données
+SaveLocation.php	Réception des requêtes POST
+
+Cette séparation rend le code plus propre et plus facile à maintenir.
+
+🛠️ Configuration Réalisée
+🔹 Serveur Web
+
+Le backend PHP a été placé dans le dossier htdocs du serveur XAMPP.
+
+Des permissions Linux ont été appliquées afin d’autoriser l’accès aux fichiers du projet.
+
+🔹 Adresse du Serveur
+
+Dans l’application Android, l’adresse IP locale du serveur a été configurée directement dans le code Java :
+
+private static final String SERVER_URL = "http://192.168.1.50/gps/SaveLocation.php";
+🔄 Déroulement du Fonctionnement
+Étapes exécutées :
+lancement de l’application ;
+activation du GPS ;
+récupération des coordonnées ;
+affichage sur l’écran ;
+envoi vers le serveur ;
+insertion automatique dans MySQL.
+📊 Résultats Obtenus
+
+Les tests effectués montrent que :
+
+✅ la position GPS est détectée correctement
+✅ les coordonnées s’affichent dans l’application
+✅ la connexion avec le serveur fonctionne
+✅ les données sont enregistrées dans la base MySQL
+✅ l’envoi via Volley est réalisé avec succès
+
+🎨 Améliorations Personnelles
+
+Plusieurs modifications ont été apportées afin de personnaliser le projet :
+
+changement des noms des classes ;
+nouvelle organisation des dossiers PHP ;
+modification des noms des tables MySQL ;
+ajout d’un affichage plus clair dans l’interface ;
+adaptation des messages de statut ;
+structure différente du code Android.
+
+✅ Conclusion
+
+Ce TP nous a permis de comprendre le fonctionnement de la géolocalisation sous Android ainsi que la communication entre une application mobile et un serveur distant.
+
+Nous avons également appris à utiliser Volley pour les requêtes réseau et à connecter une application Android avec une base de données MySQL à travers un backend PHP.
